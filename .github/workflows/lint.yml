@@ -13,12 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          depth: 0
+          fetch-depth: 0
       - name: Lint
         shell: bash
         run: |
           ## For all files that were changed, find the root directory of the chart and lint it
-          for f in $(git diff --name-only --diff-filter=ACMRTUXB origin/main HEAD); do
+          for f in $(git diff --name-only --diff-filter=ACMRTUXB HEAD~1 HEAD); do
             dir=$(dirname "$f")
             while [ "$dir" != "." ]; do
               if [ -f "$dir/Chart.yaml" ]; then

@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          depth: 0
+          fetch-depth: 0
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -32,7 +32,7 @@ jobs:
         shell: bash
         run: |
           ## For any Chart.yaml files that were changed, find the root directory of the chart, find the chart version from Chart.yaml, package it and push it to Amazon ECR using helm
-          for f in $(git diff --name-only --diff-filter=ACMRTUXB origin/main HEAD); do
+          for f in $(git diff --name-only --diff-filter=ACMRTUXB HEAD~1 HEAD); do
             dir=$(dirname "$f")
             while [ "$dir" != "." ]; do
               if [ -f "$dir/Chart.yaml" ]; then
