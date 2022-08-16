@@ -8,7 +8,7 @@ on:
       - 'charts/**'
 
 jobs:
-  docker:
+  helm-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
