@@ -38,7 +38,7 @@ jobs:
               if [ -f "$dir/Chart.yaml" ]; then
                 version=$(helm inspect chart "$dir" | grep version | awk '{print $2}')
                 helm package "$dir" --version "$version" --destination .
-                helm push "$dir-$version" "oci://${{ steps.login-ecr.outputs.registry }}"
+                helm push "$dir-$version.tgz" "oci://${{ steps.login-ecr.outputs.registry }}"
                 break
               fi
               dir=$(dirname "$dir")
