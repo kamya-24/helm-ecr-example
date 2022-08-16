@@ -18,7 +18,7 @@ jobs:
         shell: bash
         run: |
           ## For all files that were changed, find the root directory of the chart and lint it
-          for f in $(git diff --name-only --diff-filter=ACMRTUXB HEAD~1 HEAD); do
+          for f in $(git diff --name-only --diff-filter=ACMRTUXB main HEAD); do
             dir=$(dirname "$f")
             while [ "$dir" != "." ]; do
               if [ -f "$dir/Chart.yaml" ]; then
