@@ -2,16 +2,14 @@ name: ci
 
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - 'monorepo'
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - id: tag
-        run: echo ::set-output name=TAG::${GITHUB_REF#refs/*/}
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -26,11 +24,22 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push docker image to Amazon ECR
+      - name: Build, tag, and push the chart(s) to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          TAG: ${{ steps.tag.outputs.TAG }}
         shell: bash
         run: |
-          helm package hello-chart --version $TAG
-          helm push hello-chart-$TAG.tgz oci://$REGISTRY
+          ## For any Chart.yaml files that were changed, find the root directory of the chart, find the chart version from Chart.yaml, package it and push it to Amazon ECR using helm
+          for f in $(git diff --name-only --diff-filter=ACMRTUXB HEAD~1 HEAD); do
+            dir=$(dirname "$f")
+            while [ "$dir" != "." ]; do
+              if [ -f "$dir/Chart.yaml" ]; then
+                version=$(helm inspect "$dir" --version)
+                helm package "$dir" --version "$version" --destination .
+                helm push . --tls --tls-verify --repo "oci://${{ steps.login-ecr.outputs.registry }}"
+                break
+              fi
+              dir=$(dirname "$dir")
+            done
+          done
+          

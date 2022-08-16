@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - '*'
+    paths:
+      - 'charts/**'
 
 jobs:
   docker:
@@ -13,4 +15,14 @@ jobs:
       - name: Lint
         shell: bash
         run: |
-          helm lint hello-chart
+          ## For all files that were changed, find the root directory of the chart and lint it
+          for f in $(git diff --name-only --diff-filter=ACMRTUXB HEAD~1 HEAD); do
+            dir=$(dirname "$f")
+            while [ "$dir" != "." ]; do
+              if [ -f "$dir/Chart.yaml" ]; then
+                helm lint "$dir"
+                break
+              fi
+              dir=$(dirname "$dir")
+            done
+          done
