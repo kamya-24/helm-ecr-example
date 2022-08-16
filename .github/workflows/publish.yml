@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           ## For any Chart.yaml files that were changed, find the root directory of the chart, find the chart version from Chart.yaml, package it and push it to Amazon ECR using helm
-          for f in $(git diff --name-only --diff-filter=ACMRTUXB HEAD~1 HEAD); do
+          for f in $(git diff --name-only --diff-filter=ACMRTUXB HEAD~1); do
             dir=$(dirname "$f")
             while [ "$dir" != "." ]; do
               if [ -f "$dir/Chart.yaml" ]; then
