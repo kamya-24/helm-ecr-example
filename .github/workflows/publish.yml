@@ -37,7 +37,7 @@ jobs:
             while [ "$dir" != "." ]; do
               if [ -f "$dir/Chart.yaml" ]; then
                 version=$(helm inspect chart "$dir" | grep version | awk '{print $2}')
-                helm package "$dir" --version "$version"
+                helm package "$dir" --version "$version" --destination "$dir"
                 helm push "$dir-$version.tgz" "oci://${{ steps.login-ecr.outputs.registry }}"
                 break
               fi
